@@ -1,0 +1,114 @@
+import sqlite3
+import os
+from typing import List, Dict
+
+
+def generate_create_sqls(tbl_name: str, columns: List[tuple], keys: Dict) -> str:
+    """
+    tbl_name: string a table name after pyjj_{tbl_name}
+    columns: list of tuples (column_name, data_type, options)
+    keys: dict of keys key: (columns, options)
+    """
+    assert tbl_name
+    column_stmt = ",".join(f"{key} {val} {opt}" for key, val, opt in columns)
+    key_stmt = (
+        ","
+        + ",".join(
+            f"{key} ({','.join(value[0])}) {value[1]}" for key, value in keys.items()
+        )
+        if keys
+        else ""
+    )
+    return f"CREATE TABLE IF NOT EXISTS pyjj_{tbl_name} ({column_stmt} {key_stmt});"
+
+
+class Database:
+    def __init__(self, path: str = "./"):
+        if os.path.exists(os.path.dirname(path)):
+            self.connection = sqlite3.connect(os.path.join(path, "pyjj.db"))
+            cursor = self.connection.cursor()
+            DEFAULT_TABLE_URLS = {
+                "tbl_name": "default_urls",
+                "columns": [
+                    ("id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+                    ("url", "TEXT", "UNIQUE NOT NULL"),
+                    ("created_at", "DATE", "DEFAULT(datetime('now', 'localtime'))"),
+                ],
+                "keys": {},
+            }
+            DEFAULT_TABLE_TAGS = {
+                "tbl_name": "default_tags",
+                "columns": [
+                    ("id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+                    ("tag", "TEXT", "UNIQUE NOT NULL"),
+                    ("created_at", "DATE", "DEFAULT(datetime('now', 'localtime'))"),
+                ],
+                "keys": {},
+            }
+            DEFAULT_TABLE_URLTAGS = {
+                "tbl_name": "default_url_tags",
+                "columns": [
+                    ("url_id", "INTEGER", "NOT NULL"),
+                    ("tag_id", "INTEGER", "NOT NULL"),
+                ],
+                "keys": {
+                    "FOREIGN KEY (url_id) REFERENCES pyjj_default_urls": (
+                        ["id"],
+                        "ON DELETE CASCADE",
+                    ),
+                    "FOREIGN KEY (tag_id) REFERENCES pyjj_default_tags": (
+                        ["id"],
+                        "ON DELETE CASCADE",
+                    ),
+                },
+            }
+            # print(generate_create_sqls(**DEFAULT_TABLE_TAGS))
+            # print(generate_create_sqls(**DEFAULT_TABLE_URLS))
+            # print(generate_create_sqls(**DEFAULT_TABLE_URLTAGS))
+
+            cursor.execute(generate_create_sqls(**DEFAULT_TABLE_TAGS))
+            cursor.execute(generate_create_sqls(**DEFAULT_TABLE_URLS))
+            cursor.execute(generate_create_sqls(**DEFAULT_TABLE_URLTAGS))
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO pyjj_default_urls (url) VALUES ('https://www.github.com/achooan')
+            """
+            )
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO pyjj_default_tags (tag) VALUES ('personal')
+            """
+            )
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO pyjj_default_url_tags (url_id, tag_id) VALUES (1, 1)
+            """
+            )
+            self.connection.commit()
+        else:
+            raise NotADirectoryError()
+
+        self._cursor = None
+
+    def add_url(self, url):
+        cursor = self.connection.cursor()
+        cursor.execute("INSERT INTO pyjj_default_urls (url) VALUES ('{url}')")
+        self.connection.commit()
+
+    def list_urls(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM pyjj_default_urls")
+        return cursor.fetchall()
+
+    @property
+    def cursor(self):
+        if not self._cursor:
+            self._cursor = self.connection.cursor()
+        return self._cursor
+
+    def close(self):
+        if self.connection:
+            self.connection.close()
