@@ -22,6 +22,18 @@ def generate_create_sqls(tbl_name: str, columns: List[tuple], keys: Dict) -> str
     return f"CREATE TABLE IF NOT EXISTS pyjj_{tbl_name} ({column_stmt} {key_stmt});"
 
 
+def handle_exception(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except sqlite3.IntegrityError:
+            return False, "Given url already exists"
+        except Exception as e:
+            return False, f"Unexpected error: {str(e)}"
+
+    return wrapper
+
+
 class Database:
     def __init__(self, path: str = "./"):
         if os.path.exists(os.path.dirname(path)):
@@ -31,23 +43,28 @@ class Database:
 
         self._cursor = None
 
+    @handle_exception
     def add_url(self, url) -> (bool, str):
-        try:
-            self.cursor.execute(f"INSERT INTO pyjj_default_urls (url) VALUES ('{url}')")
-            self.connection.commit()
-            return True, f"Added successfully! id: {self.cursor.lastrowid}"
-        except sqlite3.IntegrityError:
-            return False, "Given url already exists"
-        except Exception as e:
-            return False, f"Unexpected error: {e.message}"
+        self.cursor.execute(f"INSERT INTO pyjj_default_urls (url) VALUES ('{url}')")
+        self.connection.commit()
+        return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
+    @handle_exception
     def list_urls(self):
         self.cursor.execute("SELECT * FROM pyjj_default_urls")
         return True, self.cursor.fetchall()
 
+    @handle_exception
     def edit_url(self, id, url):
         self.cursor.execute(f"UPDATE pyjj_default_urls SET url='{url}' WHERE id={id}")
         self.connection.commit()
+        return True, f"Edited successfully! id: {id}"
+
+    @handle_exception
+    def remove_url(self, id):
+        self.cursor.execute(f"DELETE FROM pyjj_default_urls WHERE id={id}")
+        self.connection.commit()
+        return True, f"Removed successfully! id: {id}"
 
     @property
     def cursor(self):
