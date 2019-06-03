@@ -32,9 +32,13 @@ def pyjj(config):
 def list(config):
     """Show a list of bookmarks"""
     click.echo("this is pyjj list")
-    c = config.db
-    for url in c.list_urls():
-        click.echo(url)
+    status, urls = config.db.list_urls()
+    if not status:
+        click.echo(msg(status, urls))
+    else:
+        click.echo(f"{'ID':^7} {'URL':70} DATE")
+        for id, url, date in urls:
+            click.echo(f"{id:^7} {url:70} {date}")
 
 
 @pyjj.command()
@@ -44,7 +48,7 @@ def add(config, url):
     """Add a new bookmark"""
     click.echo("this is pyjj add")
     result = config.db.add_url(url)
-    click.echo(msg(**result))
+    click.echo(msg(*result))
 
 
 @pyjj.command()
@@ -54,13 +58,18 @@ def add(config, url):
 def edit(config, url, id):
     """Edit a bookmark"""
     click.echo("this is pyjj edit")
-    config.db.edit_url(id, url)
+    result = config.db.edit_url(id, url)
+    click.echo(msg(*result))
 
 
+@click.argument("id")
 @pyjj.command()
-def remove():
+@config
+def remove(config, id):
     """remove a bookmark"""
     click.echo("this is pyjj remove")
+    result = config.db.remove_url(id)
+    click.echo(msg(*result))
 
 
 if __name__ == "__main__":
