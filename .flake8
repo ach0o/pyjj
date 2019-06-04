@@ -1,0 +1,39 @@
+[flake8]
+# Set max line length recommended by `black`
+max-line-length = 88
+
+# Set the maximum allowed McCabe complexity value for a block of code.
+max-complexity = 10
+
+# Print the source code generating the error/warning in question
+show-source = True
+
+# Count the number of occurrences of each error/warning code and print a report.
+statistics = True
+
+# List of error codes for Flake8 report:
+#   C: mccabe (only if max-complexity is given)
+#   E,W: pycodestyle
+#   F: pyflakes
+#   N: pep8-naming
+#   T4: flake8-mypy
+#   I: flake8-import-order
+#   B: flake8-bugbear
+#   B950: "Line too long" (equal to E501, but B950 is more preferred)
+#         for more detail: https://github.com/PyCQA/flake8-bugbear#opinionated-warnings
+select = C,E,F,I,N,T4,W,B,B950
+
+# List of error codes to ignore:
+#   E129: Visually indented line with same indent as next logical line
+#   E501: Line too long (82 > 79 characters)
+#   E741: Do not use variables named 'l', 'o', or 'i'
+#   W503: Line break before binary operator
+ignore = E129,E501,W503,E741
+
+# List of files and directories to exclude
+exclude = .git,__pycache__,static,*migrations*,.venv,venv
+
+# Plugin configs:
+#   flake8-import-order
+application-import-names = nolbal_app
+import-order-style = pep8

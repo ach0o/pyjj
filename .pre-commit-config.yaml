@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+      - id: check-builtin-literals
+      - id: check-yaml
+      - id: check-json
+
+  - repo: https://github.com/ambv/black
+    rev: stable 
+    hooks:
+      - id: black
+        verbose: true
+        args: [
+          --line-length=88, 
+          --target-version=py37,
+          --exclude=/(\.git|\.venv)/
+        ]
+        name: Reformat with black
+
+  - repo: local
+    hooks:
+      - id: flake8
+        name: Lint with flake8
+        entry: flake8
+        types: [python]
+        language: python
+
+default_language_version:
+  python: python3.7
