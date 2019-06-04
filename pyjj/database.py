@@ -35,16 +35,16 @@ def handle_exception(func):
 
 
 class Database:
-    def __init__(self, division="default", path: str = "./"):
+    def __init__(self, division="default"):
         self._cursor = None
         self._division = division
 
-        if os.path.exists(os.path.dirname(path)):
-            self.connection = sqlite3.connect(
-                os.path.join(path, f"{self.division}_pyjj.db")
-            )
-        else:
-            raise NotADirectoryError()
+        # Create database directory and file if not exist
+        _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.db")
+        os.makedirs(_path, exist_ok=True)
+        self.connection = sqlite3.connect(
+            os.path.join(_path, f"{self.division}_pyjj.db")
+        )
 
     @handle_exception
     def add_url(self, url) -> Tuple[bool, str]:
