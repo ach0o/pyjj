@@ -14,6 +14,8 @@ db = Db()
 def pyjj():
     """A CLI tool for bookmark management."""
     click.echo(f"[{db.division:^10}]")
+    if not db.is_setup:
+        db.setup()
 
 
 @pyjj.command()

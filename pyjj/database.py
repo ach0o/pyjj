@@ -38,6 +38,7 @@ class Database:
     def __init__(self, division="default"):
         self._cursor = None
         self._division = division
+        self.is_setup = False
 
         # Create database directory and file if not exist
         _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.db")
@@ -139,3 +140,4 @@ class Database:
             self.cursor.execute(sql)
 
         self.connection.commit()
+        self.is_setup = True
