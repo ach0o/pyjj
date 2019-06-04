@@ -1,38 +1,37 @@
 import click
-from . import database as db
 
-
-class Config:
-    def __init__(self):
-        self._db = None
-
-    @property
-    def db(self):
-        if not self._db:
-            self._db = db.Database()
-        return self._db
+from .database import Database as Db
 
 
 def msg(status, message) -> str:
     return f"\033[92m[Yay!] {message}" if status else f"\033[91m[Oops!] {message}"
 
 
-config = click.make_pass_decorator(Config, ensure=True)
+db = Db()
 
 
 @click.group()
-@config
-def pyjj(config):
+def pyjj():
     """A CLI tool for bookmark management."""
-    click.echo("Hello, this is pyjj")
+    click.echo(f"[{db.division:^10}]")
 
 
 @pyjj.command()
-@config
-def list(config):
+@click.argument("division")
+def use(division=str):
+    """Switch to a different table
+
+    :param str division: a name of the division
+    """
+    global db
+    db = Db(division=division)
+    click.echo(f"Switched to {division}")
+
+
+@pyjj.command()
+def list():
     """Show a list of bookmarks"""
-    click.echo("this is pyjj list")
-    status, urls = config.db.list_urls()
+    status, urls = db.list_urls()
     if not status:
         click.echo(msg(status, urls))
     else:
@@ -43,32 +42,26 @@ def list(config):
 
 @pyjj.command()
 @click.argument("url")
-@config
-def add(config, url):
+def add(url):
     """Add a new bookmark"""
-    click.echo("this is pyjj add")
-    result = config.db.add_url(url)
+    result = db.add_url(url)
     click.echo(msg(*result))
 
 
 @pyjj.command()
 @click.argument("id")
 @click.option("--url", help="Edit url")
-@config
-def edit(config, url, id):
+def edit(url, id):
     """Edit a bookmark"""
-    click.echo("this is pyjj edit")
-    result = config.db.edit_url(id, url)
+    result = db.edit_url(id, url)
     click.echo(msg(*result))
 
 
 @click.argument("id")
 @pyjj.command()
-@config
-def remove(config, id):
+def remove(id):
     """remove a bookmark"""
-    click.echo("this is pyjj remove")
-    result = config.db.remove_url(id)
+    result = db.remove_url(id)
     click.echo(msg(*result))
 
 
