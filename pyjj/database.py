@@ -23,7 +23,7 @@ def generate_create_sqls(tbl_name: str, columns: List[tuple], keys: Dict) -> str
 
 
 def handle_exception(func):
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Tuple[bool, str]:
         try:
             return func(*args, **kwargs)
         except sqlite3.IntegrityError:
@@ -37,8 +37,7 @@ def handle_exception(func):
 class Database:
     def __init__(self, division="default"):
         self._cursor = None
-        self._division = division
-        self.is_setup = False
+        self.division = division
 
         # Create database directory and file if not exist
         _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.db")
@@ -56,12 +55,12 @@ class Database:
         return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
     @handle_exception
-    def list_urls(self):
+    def list_urls(self) -> Tuple[bool, list]:
         self.cursor.execute(f"SELECT * FROM pyjj_{self.division}_urls")
         return True, self.cursor.fetchall()
 
     @handle_exception
-    def edit_url(self, id, url):
+    def edit_url(self, id, url) -> Tuple[bool, str]:
         self.cursor.execute(
             f"UPDATE pyjj_{self.division}_urls SET url='{url}' WHERE id={id}"
         )
@@ -69,7 +68,7 @@ class Database:
         return True, f"Edited successfully! id: {id}"
 
     @handle_exception
-    def remove_url(self, id):
+    def remove_url(self, id) -> Tuple[bool, str]:
         self.cursor.execute(f"DELETE FROM pyjj_{self.division}_urls WHERE id={id}")
         self.connection.commit()
         return True, f"Removed successfully! id: {id}"
@@ -79,15 +78,6 @@ class Database:
         if not self._cursor:
             self._cursor = self.connection.cursor()
         return self._cursor
-
-    @property
-    def division(self):
-        return self._division
-
-    @division.setter
-    def division(self, value):
-        self._division = value
-        self.setup()
 
     def close(self):
         if self.connection:
@@ -140,4 +130,3 @@ class Database:
             self.cursor.execute(sql)
 
         self.connection.commit()
-        self.is_setup = True
