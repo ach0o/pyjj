@@ -1,42 +1,46 @@
 import click
 
+from .config import PyjjConfig
 from .database import Database as Db
 
 
-def msg(status, message) -> str:
-    return f"\033[92m[Yay!] {message}" if status else f"\033[91m[Oops!] {message}"
+def msg(division, status, message) -> str:
+    return f"\033[92m[{division}] {message}" if status else f"\033[91m[Oops!] {message}"
 
 
-db = Db()
+pass_config = click.make_pass_decorator(PyjjConfig, ensure=True)
 
 
 @click.group()
-def pyjj():
+@pass_config
+def pyjj(config):
     """A CLI tool for bookmark management."""
-    click.echo(f"[{db.division:^10}]")
-    if not db.is_setup:
-        db.setup()
+    config.parse()
+    config.db = Db(division=config.division)
+    config.db.setup()
 
 
 @pyjj.command()
 @click.argument("division")
-def use(division=str):
+@pass_config
+def use(config, division=str):
     """Switch to a different table
 
     :param str division: a name of the division
     """
-    global db
-    db = Db(division=division)
+    config.update(division=division)
     click.echo(f"Switched to {division}")
 
 
 @pyjj.command()
-def list():
+@pass_config
+def list(config):
     """Show a list of bookmarks"""
-    status, urls = db.list_urls()
+    status, urls = config.db.list_urls()
     if not status:
-        click.echo(msg(status, urls))
+        click.echo(msg(config.division, status, urls))
     else:
+        click.echo(f"[{config.division:^10}]")
         click.echo(f"{'ID':^7} {'URL':70} DATE")
         for id, url, date in urls:
             click.echo(f"{id:^7} {url:70} {date}")
@@ -44,27 +48,30 @@ def list():
 
 @pyjj.command()
 @click.argument("url")
-def add(url):
+@pass_config
+def add(config, url):
     """Add a new bookmark"""
-    result = db.add_url(url)
-    click.echo(msg(*result))
+    result = config.db.add_url(url)
+    click.echo(msg(config.division, *result))
 
 
 @pyjj.command()
 @click.argument("id")
 @click.option("--url", help="Edit url")
-def edit(url, id):
+@pass_config
+def edit(config, url, id):
     """Edit a bookmark"""
-    result = db.edit_url(id, url)
-    click.echo(msg(*result))
+    result = config.db.edit_url(id, url)
+    click.echo(msg(config.division, *result))
 
 
 @click.argument("id")
 @pyjj.command()
-def remove(id):
+@pass_config
+def remove(config, id):
     """remove a bookmark"""
-    result = db.remove_url(id)
-    click.echo(msg(*result))
+    result = config.db.remove_url(id)
+    click.echo(msg(config.division, *result))
 
 
 if __name__ == "__main__":
