@@ -2,10 +2,7 @@ import click
 
 from .config import PyjjConfig
 from .database import Database as Db
-
-
-def msg(division, status, message) -> str:
-    return f"\033[92m[{division}] {message}" if status else f"\033[91m[Oops!] {message}"
+from .messages import msg
 
 
 pass_config = click.make_pass_decorator(PyjjConfig, ensure=True)
