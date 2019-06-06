@@ -71,6 +71,15 @@ class Database:
         return True, f"Edited successfully! id: {id}"
 
     @handle_exception
+    def get_url(self, id) -> Tuple[bool, object]:
+        self.cursor.execute(f"SELECT * FROM pyjj_{self.division}_urls WHERE id={id}")
+        result = self.cursor.fetchone()
+        if result:
+            return True, result
+        else:
+            return False, f"Given id does not exist! id: {id}"
+
+    @handle_exception
     def remove_url(self, id) -> Tuple[bool, str]:
         self.cursor.execute(f"DELETE FROM pyjj_{self.division}_urls WHERE id={id}")
         self.connection.commit()

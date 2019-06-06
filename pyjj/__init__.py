@@ -74,7 +74,9 @@ def edit(config, id: int, url: str):
     :param int id: an id of url to edit
     :param str url: an url to add to the database
     """
-    result = config.db.edit_url(id, url)
+    result = config.db.get_url(id)
+    if result[0]:  # Edit url as id exists
+        result = config.db.edit_url(id, url)
     click.echo(msg(config.division, *result))
 
 
@@ -87,7 +89,13 @@ def remove(config, id):
     :param object config: an object with the current context
     :param int id: an id of url to delete
     """
-    result = config.db.remove_url(id)
+    result = config.db.get_url(id)
+    if result[0]:  # Remove url as id exists
+        is_confirmed = click.confirm(f"Wish to delete {result[1]} ?")
+        if is_confirmed:
+            result = config.db.remove_url(id)
+        else:
+            result = (False, "aborted.")
     click.echo(msg(config.division, *result))
 
 
