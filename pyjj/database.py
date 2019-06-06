@@ -1,3 +1,4 @@
+from datetime import datetime
 import sqlite3
 import os
 from typing import List, Dict, Tuple
@@ -61,8 +62,10 @@ class Database:
 
     @handle_exception
     def edit_url(self, id, url) -> Tuple[bool, str]:
+        now = datetime.now()
+        edited_time = now.strftime("%Y-%m-%d %H:%M:%S")
         self.cursor.execute(
-            f"UPDATE pyjj_{self.division}_urls SET url='{url}' WHERE id={id}"
+            f"UPDATE pyjj_{self.division}_urls SET url='{url}', created_at='{edited_time}' WHERE id={id}"
         )
         self.connection.commit()
         return True, f"Edited successfully! id: {id}"
