@@ -65,7 +65,7 @@ def add(config, url: str):
 
 @pyjj.command(help="Edit a bookmark")
 @click.argument("id")
-@click.option("--url", help="Edit url")
+@click.argument("url")
 @pass_config
 def edit(config, id: int, url: str):
     """Edit a bookmark
