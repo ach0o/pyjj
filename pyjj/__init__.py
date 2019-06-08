@@ -34,20 +34,26 @@ def use(config, division=str):
 
 
 @pyjj.command(help="Show a list of bookmarks")
+@click.option("--tag", "-t", is_flag=True)
 @pass_config
-def list(config):
+def list(config, tag):
     """Show a list of bookmarks
 
     :param object config: an object with the current context
     """
-    status, urls = config.db.list_urls()
+    status, urls = config.db.list_urls(with_tag=tag)
     if not status:
         click.echo(msg(config.division, status, urls))
     else:
         click.echo(f"[{config.division:^10}]")
-        click.echo(f"{'ID':^7} {'URL':70} DATE")
-        for id, url, date in urls:
-            click.echo(f"{id:^7} {url:70} {date}")
+        if tag:
+            click.echo(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE")
+            for url, tags in urls:
+                click.echo(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}")
+        else:
+            click.echo(f"{'ID':^7} {'URL':60} DATE")
+            for id, url, date in urls:
+                click.echo(f"{id:^7} {url:60} {date}")
 
 
 @pyjj.command(help="Add a new bookmark")

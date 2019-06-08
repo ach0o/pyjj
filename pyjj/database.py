@@ -57,9 +57,22 @@ class Database:
         return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
     @handle_exception
-    def list_urls(self) -> Tuple[bool, list]:
+    def list_urls(self, with_tag) -> Tuple[bool, list]:
         self.cursor.execute(f"SELECT * FROM pyjj_{self.division}_urls")
-        return True, self.cursor.fetchall()
+        if with_tag:
+            url_rows = self.cursor.fetchall()
+            tags = []
+            for url in url_rows:
+                self.cursor.execute(
+                    f"""SELECT B.tag FROM pyjj_{self.division}_url_tags AS A
+                    INNER JOIN pyjj_{self.division}_tags AS B ON A.tag_id=B.id
+                    WHERE url_id={url[0]}"""
+                )
+                url_tags = [tag[0] for tag in self.cursor.fetchall()]
+                tags.append(url_tags)
+            return True, list(zip(url_rows, tags))
+        else:
+            return True, self.cursor.fetchall()
 
     @handle_exception
     def edit_url(self, id, url) -> Tuple[bool, str]:
