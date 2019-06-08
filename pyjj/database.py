@@ -48,11 +48,12 @@ class Database:
         )
 
     @handle_exception
-    def add_url(self, url) -> Tuple[bool, str]:
+    def add_url(self, url, tags) -> Tuple[bool, str]:
         self.cursor.execute(
             f"INSERT INTO pyjj_{self.division}_urls (url) VALUES ('{url}')"
         )
         self.connection.commit()
+        self.add_tags(url_id=self.cursor.lastrowid, tags=tags)
         return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
     @handle_exception
@@ -84,6 +85,21 @@ class Database:
         self.cursor.execute(f"DELETE FROM pyjj_{self.division}_urls WHERE id={id}")
         self.connection.commit()
         return True, f"Removed successfully! id: {id}"
+
+    @handle_exception
+    def add_tags(self, url_id, tags: list) -> Tuple[bool, str]:
+        for tag in tags:
+            # Insert to tag table
+            self.cursor.execute(
+                f"INSERT INTO pyjj_{self.division}_tags (tag) VALUES ('{tag}')"
+            )
+
+            # Insert to url-tag table
+            self.cursor.execute(
+                f"INSERT INTO pyjj_{self.division}_url_tags (url_id, tag_id) VALUES ('{url_id}', '{self.cursor.lastrowid}')"
+            )
+        self.connection.commit()
+        return True, f"Added successfully! tags: {tags}"
 
     @property
     def cursor(self):

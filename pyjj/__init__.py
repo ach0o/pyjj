@@ -52,14 +52,15 @@ def list(config):
 
 @pyjj.command(help="Add a new bookmark")
 @click.argument("url")
+@click.option("--tags", "-t")
 @pass_config
-def add(config, url: str):
+def add(config, tags: str, url: str):
     """Add a new bookmark
 
     :param object config: an object with the current context
     :param str url: an url to add to the database
     """
-    result = config.db.add_url(url)
+    result = config.db.add_url(url, tags=tags.split(","))
     click.echo(msg(config.division, *result))
 
 
