@@ -102,17 +102,33 @@ class Database:
     @handle_exception
     def add_tags(self, url_id, tags: list) -> Tuple[bool, str]:
         for tag in tags:
-            # Insert to tag table
-            self.cursor.execute(
-                f"INSERT INTO pyjj_{self.division}_tags (tag) VALUES ('{tag}')"
-            )
+            is_exists, tag_id = self.check_tag(tag)
+
+            if not is_exists:
+                # Insert to tag table
+                self.cursor.execute(
+                    f"INSERT INTO pyjj_{self.division}_tags (tag) VALUES ('{tag}')"
+                )
+                tag_id = self.cursor.lastrowid
 
             # Insert to url-tag table
             self.cursor.execute(
-                f"INSERT INTO pyjj_{self.division}_url_tags (url_id, tag_id) VALUES ('{url_id}', '{self.cursor.lastrowid}')"
+                f"INSERT INTO pyjj_{self.division}_url_tags (url_id, tag_id) VALUES ('{url_id}', '{tag_id}')"
             )
+
         self.connection.commit()
         return True, f"Added successfully! tags: {tags}"
+
+    @handle_exception
+    def check_tag(self, tag) -> Tuple[bool, int]:
+        self.cursor.execute(
+            f"SELECT id FROM pyjj_{self.division}_tags WHERE tag='{tag}'"
+        )
+        row = self.cursor.fetchone()
+        if row:
+            return True, row[0]
+        else:
+            return False, -1
 
     @property
     def cursor(self):
