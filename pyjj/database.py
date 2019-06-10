@@ -120,7 +120,7 @@ class Database:
         return True, f"Added successfully! tags: {tags}"
 
     @handle_exception
-    def check_tag(self, tag) -> Tuple[bool, int]:
+    def check_tag(self, tag: str) -> Tuple[bool, int]:
         self.cursor.execute(
             f"SELECT id FROM pyjj_{self.division}_tags WHERE tag='{tag}'"
         )
@@ -129,6 +129,18 @@ class Database:
             return True, row[0]
         else:
             return False, -1
+
+    @handle_exception
+    def remove_url_tag(self, url_id: int, tag: str) -> Tuple[bool, str]:
+        is_exist, tag_id = self.check_tag(tag)
+        if is_exist:
+            self.cursor.execute(
+                f"DELETE FROM pyjj_{self.division}_url_tags WHERE url_id={url_id} AND tag_id={tag_id}"
+            )
+            self.connection.commit()
+            return True, f"Removed successfully! id: {tag_id}"
+        else:
+            return False, f"Given tag does not exist for {url_id}! tag: {tag}"
 
     @property
     def cursor(self):

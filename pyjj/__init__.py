@@ -89,20 +89,26 @@ def edit(config, id: int, url: str):
 
 @pyjj.command(help="Remove a bookmark")
 @click.argument("id")
+@click.option("--tag", "-t")
 @pass_config
-def remove(config, id):
-    """Remove a bookmark
+def remove(config, id, tag):
+    """Remove a bookmark. When given option `-t`, only the tag
+    associated with the url gets removed.
 
     :param object config: an object with the current context
     :param int id: an id of url to delete
+    :param str tag: a tag of url to delete
     """
     result = config.db.get_url(id)
     if result[0]:  # Remove url as id exists
-        is_confirmed = click.confirm(f"Wish to delete {result[1]} ?")
-        if is_confirmed:
-            result = config.db.remove_url(id)
+        if tag:
+            result = config.db.remove_url_tag(id, tag)
         else:
-            result = (False, "aborted.")
+            is_confirmed = click.confirm(f"Wish to delete {result[1]} ?")
+            if is_confirmed:
+                result = config.db.remove_url(id)
+            else:
+                result = (False, "aborted.")
     click.echo(msg(config.division, *result))
 
 
