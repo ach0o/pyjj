@@ -2,7 +2,7 @@ import click
 
 from .config import PyjjConfig
 from .database import Database as Db
-from .messages import msg
+from .messages import msg, header, content
 
 
 pass_config = click.make_pass_decorator(PyjjConfig, ensure=True)
@@ -47,13 +47,17 @@ def list(config, tag):
     else:
         click.echo(f"[{config.division:^10}]")
         if tag:
-            click.echo(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE")
+            click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
             for url, tags in urls:
-                click.echo(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}")
+                click.echo(
+                    content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}")
+                )
         else:
-            click.echo(f"{'ID':^7} {'URL':60} DATE")
+            click.echo(header(f"{'ID':^7} {'URL':60} DATE"))
             for id, url, date in urls:
-                click.echo(f"{id:^7} {url:60} {date}")
+                click.echo(content(f"{id:^7} {url:60} {date}"))
+
+    # TODO: Pagination
 
 
 @pyjj.command(help="Add a new bookmark")

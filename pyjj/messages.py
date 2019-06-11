@@ -4,6 +4,8 @@ class Colors:
 
     RED = "\u001b[38;5;197m"
     GREEN = "\u001b[38;5;157m"
+    YELLOW = "\u001b[38;5;220m"
+    ORANGE = "\u001b[38;5;208m"
 
 
 def msg(division: str, status: bool, message: str) -> str:
@@ -16,3 +18,21 @@ def msg(division: str, status: bool, message: str) -> str:
     """
     color = Colors.GREEN if status else Colors.RED
     return f"{color}[{division:^10}] {message}"
+
+
+def header(message: str) -> str:
+    """Return a colorize string for headers
+
+    :param str message: a message to display on the console
+    :return: string
+    """
+    return f"{Colors.ORANGE}{message}"
+
+
+def content(message: str) -> str:
+    """Return a colorize string for content
+
+    :param str message: a message to display on the console
+    :return: string
+    """
+    return f"{Colors.YELLOW}{message}"
