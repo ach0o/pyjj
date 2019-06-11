@@ -48,12 +48,15 @@ class Database:
         )
 
     @handle_exception
-    def add_url(self, url, tags) -> Tuple[bool, str]:
+    def add_url(self, url, tags=None) -> Tuple[bool, str]:
         self.cursor.execute(
             f"INSERT INTO pyjj_{self.division}_urls (url) VALUES ('{url}')"
         )
         self.connection.commit()
-        self.add_tags(url_id=self.cursor.lastrowid, tags=tags)
+
+        if tags:
+            self.add_tags(url_id=self.cursor.lastrowid, tags=tags)
+
         return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
     @handle_exception

@@ -66,7 +66,10 @@ def add(config, tags: str, url: str):
     :param object config: an object with the current context
     :param str url: an url to add to the database
     """
-    result = config.db.add_url(url, tags=tags.split(","))
+    if tags:
+        result = config.db.add_url(url, tags=tags.split(","))
+    else:
+        result = config.db.add_url(url)
     click.echo(msg(config.division, *result))
 
 
