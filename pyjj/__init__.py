@@ -119,5 +119,19 @@ def remove(config, id, tag):
     click.echo(msg(config.division, *result))
 
 
+@pyjj.command(help="Get a random bookmark")
+@click.option("--tag", "-t")
+@pass_config
+def eureka(config, tag=None):
+    """Get a random bookmark. When given option `-t`, returns
+    a randome bookmark with the given tag.
+
+    :param object config: an object with the current context
+    :param str tag: a tag of a random url
+    """
+    result = config.db.get_random_url(tag)
+    click.echo(msg(config.division, *result))
+
+
 if __name__ == "__main__":
     pyjj()

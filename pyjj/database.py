@@ -1,6 +1,7 @@
-from datetime import datetime
-import sqlite3
 import os
+import sqlite3
+from datetime import datetime
+from random import randint
 from typing import List, Dict, Tuple
 
 
@@ -144,6 +145,15 @@ class Database:
             return True, f"Removed successfully! id: {tag_id}"
         else:
             return False, f"Given tag does not exist for {url_id}! tag: {tag}"
+
+    @handle_exception
+    def get_random_url(self, tag=None) -> Tuple[bool, tuple]:
+        status, urls = self.list_urls(with_tag=False)
+        print(urls)
+        if urls:
+            return status, urls[randint(0, len(urls) - 1)]
+        else:
+            return status, ()
 
     @property
     def cursor(self):
