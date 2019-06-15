@@ -61,22 +61,30 @@ class Database:
         return True, f"Added successfully! id: {self.cursor.lastrowid}"
 
     @handle_exception
-    def list_urls(self, with_tag) -> Tuple[bool, list]:
-        self.cursor.execute(f"SELECT * FROM pyjj_{self.division}_urls")
-        if with_tag:
-            url_rows = self.cursor.fetchall()
-            tags = []
-            for url in url_rows:
-                self.cursor.execute(
-                    f"""SELECT B.tag FROM pyjj_{self.division}_url_tags AS A
-                    INNER JOIN pyjj_{self.division}_tags AS B ON A.tag_id=B.id
-                    WHERE url_id={url[0]}"""
-                )
-                url_tags = [tag[0] for tag in self.cursor.fetchall()]
-                tags.append(url_tags)
-            return True, list(zip(url_rows, tags))
+    def list_urls(self, tag) -> Tuple[bool, list]:
+        sql = f"SELECT * FROM pyjj_{self.division}_urls"
+        is_tag_exist, tag_id = self.check_tag(tag)
+        if is_tag_exist:
+            # Get urls with the given tag
+            sql = f"""SELECT A.* FROM pyjj_{self.division}_urls AS A
+                    INNER JOIN pyjj_{self.division}_url_tags AS B ON A.id=B.url_id
+                    WHERE B.tag_id={tag_id}"""
         else:
-            return True, self.cursor.fetchall()
+            # If the given tag doesn't exist, return empty list
+            return True, []
+
+        self.cursor.execute(sql)
+        url_rows = self.cursor.fetchall()
+        tags = []
+        for url in url_rows:
+            self.cursor.execute(
+                f"""SELECT B.tag FROM pyjj_{self.division}_url_tags AS A
+                INNER JOIN pyjj_{self.division}_tags AS B ON A.tag_id=B.id
+                WHERE url_id={url[0]}"""
+            )
+            url_tags = [tag[0] for tag in self.cursor.fetchall()]
+            tags.append(url_tags)
+        return True, list(zip(url_rows, tags))
 
     @handle_exception
     def edit_url(self, id, url) -> Tuple[bool, str]:

@@ -34,28 +34,22 @@ def use(config, division=str):
 
 
 @pyjj.command(help="Show a list of bookmarks")
-@click.option("--tag", "-t", is_flag=True)
+@click.option("--tag", "-t")
 @pass_config
-def list(config, tag):
+def list(config, tag: str):
     """Show a list of bookmarks
 
     :param object config: an object with the current context
+    :param str tag: a tag of urls
     """
-    status, urls = config.db.list_urls(with_tag=tag)
+    status, urls = config.db.list_urls(tag=tag)
     if not status:
         click.echo(msg(config.division, status, urls))
     else:
         click.echo(f"[{config.division:^10}]")
-        if tag:
-            click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
-            for url, tags in urls:
-                click.echo(
-                    content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}")
-                )
-        else:
-            click.echo(header(f"{'ID':^7} {'URL':60} DATE"))
-            for id, url, date in urls:
-                click.echo(content(f"{id:^7} {url:60} {date}"))
+        click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
+        for url, tags in urls:
+            click.echo(content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}"))
 
     # TODO: Pagination
 
