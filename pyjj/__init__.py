@@ -123,8 +123,12 @@ def eureka(config, tag=None):
     :param object config: an object with the current context
     :param str tag: a tag of a random url
     """
-    result = config.db.get_random_url(tag)
-    click.echo(msg(config.division, *result))
+    _, url_tags = config.db.get_random_url(tag)
+    url, tags = url_tags
+
+    click.echo(f"[{config.division:^10}]")
+    click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
+    click.echo(content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}"))
 
 
 if __name__ == "__main__":

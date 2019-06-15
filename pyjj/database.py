@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from datetime import datetime
-from random import randint
+from random import choice
 from typing import List, Dict, Tuple
 
 
@@ -158,13 +158,10 @@ class Database:
             return False, f"Given tag does not exist for {url_id}! tag: {tag}"
 
     @handle_exception
-    def get_random_url(self, tag=None) -> Tuple[bool, tuple]:
-        status, urls = self.list_urls(with_tag=False)
-        print(urls)
-        if urls:
-            return status, urls[randint(0, len(urls) - 1)]
-        else:
-            return status, ()
+    def get_random_url(self, tag: str = None) -> Tuple[bool, tuple]:
+        is_urls_exist, urls = self.list_urls(tag)
+        url = choice(urls) if urls else ()
+        return is_urls_exist, url
 
     @property
     def cursor(self):
