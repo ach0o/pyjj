@@ -22,6 +22,7 @@ Options:
 Commands:
   add     Add a new bookmark
   edit    Edit a bookmark
+  eureka  Get a random bookmark
   list    Show a list of bookmarks
   remove  Remove a bookmark
   use     Switch to a different table
