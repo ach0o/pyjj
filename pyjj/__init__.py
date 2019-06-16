@@ -2,7 +2,7 @@ import click
 
 from .config import PyjjConfig
 from .database import Database as Db
-from .messages import msg, header, content
+from .messages import msg, header, content, division
 
 
 pass_config = click.make_pass_decorator(PyjjConfig, ensure=True)
@@ -18,7 +18,7 @@ def pyjj(config):
     config.parse()
     config.db = Db(division=config.division)
     config.db.setup()
-    click.echo(f"Division: {config.division}")
+    click.echo(division(config.division))
 
 
 @pyjj.command(help="Switch to a different table")
@@ -45,7 +45,7 @@ def list(config, tag: str):
     """
     status, urls = config.db.list_urls(tag=tag)
     if not status:
-        click.echo(msg(config.division, status, urls))
+        click.echo(msg(status, urls))
     else:
         click.echo(header("Bookmarks", f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
         for url, tags in urls:
@@ -68,7 +68,7 @@ def add(config, tags: str, url: str):
         result = config.db.add_url(url, tags=tags.split(","))
     else:
         result = config.db.add_url(url)
-    click.echo(msg(config.division, *result))
+    click.echo(msg(*result))
 
 
 @pyjj.command(help="Edit a bookmark")
@@ -85,7 +85,7 @@ def edit(config, id: int, url: str):
     result = config.db.get_url(id)
     if result[0]:  # Edit url as id exists
         result = config.db.edit_url(id, url)
-    click.echo(msg(config.division, *result))
+    click.echo(msg(*result))
 
 
 @pyjj.command(help="Remove a bookmark")
@@ -110,7 +110,7 @@ def remove(config, id, tag):
                 result = config.db.remove_url(id)
             else:
                 result = (False, "aborted.")
-    click.echo(msg(config.division, *result))
+    click.echo(msg(*result))
 
 
 @pyjj.command(help="Get a random bookmark")

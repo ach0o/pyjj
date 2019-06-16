@@ -26,7 +26,7 @@ def header(title: str, message: str) -> str:
     :param str message: a message to display on the console
     :return: string
     """
-    return f"{title}\n{Colors.ORANGE}{message}"
+    return f"> {title}\n\n{Colors.ORANGE}{message}"
 
 
 def content(message: str) -> str:
@@ -36,3 +36,13 @@ def content(message: str) -> str:
     :return: string
     """
     return f"{Colors.YELLOW}{message}"
+
+
+def division(division: str) -> str:
+    """Return a colorize string for division
+
+    :param str division: a division name to display on the console
+    :return: string
+    """
+    _dec = "=" * 6
+    return f"\n{_dec} Division: {division} {_dec}\n"
