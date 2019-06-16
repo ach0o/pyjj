@@ -115,6 +115,12 @@ class Database:
         return True, f"Removed successfully! id: {id}"
 
     @handle_exception
+    def list_tags(self) -> Tuple[bool, list]:
+        self.cursor.execute(f"SELECT tag, created_at FROM pyjj_{self.division}_tags")
+        tags = self.cursor.fetchall()
+        return bool(tags), list(zip(range(1, len(tags) + 1), tags))
+
+    @handle_exception
     def add_tags(self, url_id, tags: list) -> Tuple[bool, str]:
         for tag in tags:
             is_exists, tag_id = self.check_tag(tag)

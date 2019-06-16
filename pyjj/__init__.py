@@ -131,5 +131,19 @@ def eureka(config, tag=None):
     click.echo(content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}"))
 
 
+@pyjj.command(help="Show a list of tags")
+@pass_config
+def tags(config):
+    """Show a list of tags.
+
+    :param object config: an object with the current context
+    """
+    status, tags = config.db.list_tags()
+    click.echo(header(f"{'ID':^7} {'TAGS':20} DATE"))
+    if status:
+        for index, tag in tags:
+            click.echo(content(f"{index:^7} {tag[0]:20} {tag[1]}"))
+
+
 if __name__ == "__main__":
     pyjj()
