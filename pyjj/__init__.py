@@ -18,6 +18,7 @@ def pyjj(config):
     config.parse()
     config.db = Db(division=config.division)
     config.db.setup()
+    click.echo(f"Division: {config.division}")
 
 
 @pyjj.command(help="Switch to a different table")
@@ -46,8 +47,7 @@ def list(config, tag: str):
     if not status:
         click.echo(msg(config.division, status, urls))
     else:
-        click.echo(f"[{config.division:^10}]")
-        click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
+        click.echo(header("Bookmarks", f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
         for url, tags in urls:
             click.echo(content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}"))
 
@@ -126,8 +126,7 @@ def eureka(config, tag=None):
     _, url_tags = config.db.get_random_url(tag)
     url, tags = url_tags
 
-    click.echo(f"[{config.division:^10}]")
-    click.echo(header(f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
+    click.echo(header("Eureka!", f"{'ID':^7} {'URL':60} {'TAGS':20} DATE"))
     click.echo(content(f"{url[0]:^7} {url[1]:60} {','.join(tags):20} {url[2]}"))
 
 
@@ -139,7 +138,7 @@ def tags(config):
     :param object config: an object with the current context
     """
     status, tags = config.db.list_tags()
-    click.echo(header(f"{'ID':^7} {'TAGS':20} DATE"))
+    click.echo(header("Tags", f"{'ID':^7} {'TAGS':20} DATE"))
     if status:
         for index, tag in tags:
             click.echo(content(f"{index:^7} {tag[0]:20} {tag[1]}"))

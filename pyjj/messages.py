@@ -8,25 +8,25 @@ class Colors:
     ORANGE = "\u001b[38;5;208m"
 
 
-def msg(division: str, status: bool, message: str) -> str:
+def msg(status: bool, message: str) -> str:
     """Return a colorize string depends on the status
 
-    :param str division: a current division
     :param bool status: a status of the message
     :param str message: a message to display on the console
     :return: string
     """
     color = Colors.GREEN if status else Colors.RED
-    return f"{color}[{division:^10}] {message}"
+    return f"{color}{message}"
 
 
-def header(message: str) -> str:
+def header(title: str, message: str) -> str:
     """Return a colorize string for headers
 
+    :param str title: a title to display on the console
     :param str message: a message to display on the console
     :return: string
     """
-    return f"{Colors.ORANGE}{message}"
+    return f"{title}\n{Colors.ORANGE}{message}"
 
 
 def content(message: str) -> str:
