@@ -12,6 +12,12 @@ A bookmark management CLI
 pip install --editable .
 ```
 
+### Configuration
+Copy `config.example.yaml` to `config.yaml`
+```bash
+cp config.example.yaml config.yaml
+```
+
 ### Command line options
 ```text
 pyjj [OPTIONS] COMMAND [ARGS]...
@@ -25,6 +31,7 @@ Commands:
   eureka  Get a random bookmark
   list    Show a list of bookmarks
   remove  Remove a bookmark
+  tags    Show a list of tags
   use     Switch to a different table
 ```
 
