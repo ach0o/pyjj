@@ -18,8 +18,11 @@ def handle_exception(func):
 class PyjjConfig:
     def __init__(self):
         self.path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "../config.yaml"
+            os.path.dirname(os.path.abspath(__file__)), "config.yaml"
         )
+        if not os.path.exists(self.path):
+            with open(self.path, "w") as file:
+                file.write("division: default")
 
     @handle_exception
     def parse(self) -> None:

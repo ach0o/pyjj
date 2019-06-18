@@ -42,7 +42,7 @@ class Database:
         self.division = division
 
         # Create database directory and file if not exist
-        _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.db")
+        _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".db")
         os.makedirs(_path, exist_ok=True)
         self.connection = sqlite3.connect(
             os.path.join(_path, f"{self.division}_pyjj.db")
@@ -94,7 +94,8 @@ class Database:
         now = datetime.now()
         edited_time = now.strftime("%Y-%m-%d %H:%M:%S")
         self.cursor.execute(
-            f"UPDATE pyjj_{self.division}_urls SET url='{url}', created_at='{edited_time}' WHERE id={id}"
+            f"UPDATE pyjj_{self.division}_urls SET url='{url}', "
+            f"created_at='{edited_time}' WHERE id={id}"
         )
         self.connection.commit()
         return True, f"Edited successfully! id: {id}"
@@ -134,7 +135,8 @@ class Database:
 
             # Insert to url-tag table
             self.cursor.execute(
-                f"INSERT INTO pyjj_{self.division}_url_tags (url_id, tag_id) VALUES ('{url_id}', '{tag_id}')"
+                f"INSERT INTO pyjj_{self.division}_url_tags (url_id, tag_id)"
+                f" VALUES ('{url_id}', '{tag_id}')"
             )
 
         self.connection.commit()
@@ -156,7 +158,8 @@ class Database:
         is_exist, tag_id = self.check_tag(tag)
         if is_exist:
             self.cursor.execute(
-                f"DELETE FROM pyjj_{self.division}_url_tags WHERE url_id={url_id} AND tag_id={tag_id}"
+                f"DELETE FROM pyjj_{self.division}_url_tags WHERE "
+                f"url_id={url_id} AND tag_id={tag_id}"
             )
             self.connection.commit()
             return True, f"Removed successfully! id: {tag_id}"
