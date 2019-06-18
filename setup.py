@@ -11,11 +11,11 @@ def get_long_description() -> str:
 
 setup(
     name="pyjj",
-    version="1.0",
+    version="0.0.1",
     author="Changhyun An",
     author_email="88soldieron@gmail.com",
     py_modules=["pyjj"],
-    install_requires=["click"],
+    install_requires=["click", "pyyaml"],
     maintainer="Changhyun An",
     maintainer_email="88soldieron@gmail.com",
     url="https://www.github.com/achooan/pyjj",
@@ -25,4 +25,5 @@ setup(
     long_description_content_type="text/markdown",
     entry_points={"console_scripts": ["pyjj=pyjj:pyjj"]},
     python_requires=">=3.6",
+    packages=["pyjj"],
 )
