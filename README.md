@@ -12,12 +12,6 @@ A bookmark management CLI
 pip install --editable .
 ```
 
-### Configuration
-Copy `config.example.yaml` to `config.yaml`
-```bash
-cp config.example.yaml config.yaml
-```
-
 ### Command line options
 ```text
 pyjj [OPTIONS] COMMAND [ARGS]...
