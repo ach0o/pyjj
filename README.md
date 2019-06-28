@@ -3,7 +3,7 @@
 
 A bookmark management CLI
 
----
+
 
 ## Installation and usage
 
