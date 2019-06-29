@@ -35,5 +35,5 @@ exclude = .git,__pycache__,static,*migrations*,.venv,venv
 
 # Plugin configs:
 #   flake8-import-order
-application-import-names = nolbal_app
+application-import-names = pyjj
 import-order-style = pep8

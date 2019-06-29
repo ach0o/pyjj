@@ -5,11 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
-flake8 = "*"
-flake8-mypy = "*"
-flake8-import-order = "*"
-flake8-bugbear = "*"
-pep8-naming = "*"
 pre-commit = "*"
 wily = "*"
 twine = "*"
