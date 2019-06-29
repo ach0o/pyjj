@@ -3,19 +3,13 @@
 
 A bookmark management CLI
 
----
+
 
 ## Installation and usage
 
 ### Installation (for development)
 ```bash
 pip install --editable .
-```
-
-### Configuration
-Copy `config.example.yaml` to `config.yaml`
-```bash
-cp config.example.yaml config.yaml
 ```
 
 ### Command line options
