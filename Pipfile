@@ -9,6 +9,7 @@ pre-commit = "*"
 wily = "*"
 twine = "*"
 wheel = "*"
+pytest = "*"
 
 [packages]
 click = "*"
