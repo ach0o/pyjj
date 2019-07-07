@@ -24,6 +24,6 @@ setup(
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     entry_points={"console_scripts": ["pyjj=pyjj:pyjj"]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     packages=["pyjj"],
 )
