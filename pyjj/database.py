@@ -38,6 +38,10 @@ def handle_exception(func):
 
 class Database:
     def __init__(self, division="default"):
+        """Creates a sqlite database with the given division name
+
+        :param str division: a name of the sqlite database
+        """
         self._cursor = None
         self.division = division
 
@@ -49,7 +53,12 @@ class Database:
         )
 
     @handle_exception
-    def add_url(self, url, tags=None) -> Tuple[bool, str]:
+    def add_url(self, url: str, tags: list = None) -> Tuple[bool, str]:
+        """Inserts a url with tags if it is given
+
+        :param str url: a url to insert
+        :param list tags: a list of tags to be attached to the url
+        """
         self.cursor.execute(
             f"INSERT INTO pyjj_{self.division}_urls (url) VALUES ('{url}')"
         )
@@ -62,6 +71,11 @@ class Database:
 
     @handle_exception
     def list_urls(self, tag: str = None) -> Tuple[bool, list]:
+        """Returns a list of urls filtered by a tag if it is given.
+
+        :param str tag: a tag attached to urls; it is used to filter urls
+        :return: a tuple with a status of select query and a list of urls
+        """
         sql = f"SELECT * FROM pyjj_{self.division}_urls"
 
         if tag:
@@ -90,7 +104,13 @@ class Database:
         return True, list(zip(url_rows, tags))
 
     @handle_exception
-    def edit_url(self, id, url) -> Tuple[bool, str]:
+    def edit_url(self, id: int, url: str) -> Tuple[bool, str]:
+        """Update url with id
+
+        :param int id: an id of the url
+        :param str url: a new url to update
+        :return: a tuple with a status of update query and a message
+        """
         now = datetime.now()
         edited_time = now.strftime("%Y-%m-%d %H:%M:%S")
         self.cursor.execute(
@@ -101,7 +121,12 @@ class Database:
         return True, f"Edited successfully! id: {id}"
 
     @handle_exception
-    def get_url(self, id) -> Tuple[bool, object]:
+    def get_url(self, id: int) -> Tuple[bool, object]:
+        """Returns data that includes url and tags
+
+        :param int id: an id of the url
+        :return: a tuple with a status of select query and a result
+        """
         self.cursor.execute(f"SELECT * FROM pyjj_{self.division}_urls WHERE id={id}")
         result = self.cursor.fetchone()
         if result:
@@ -110,19 +135,34 @@ class Database:
             return False, f"Given id does not exist! id: {id}"
 
     @handle_exception
-    def remove_url(self, id) -> Tuple[bool, str]:
+    def remove_url(self, id: int) -> Tuple[bool, str]:
+        """Remove url with id
+
+        :param int id: an id of the url
+        :return: a tuple with a status of delete query and a message
+        """
         self.cursor.execute(f"DELETE FROM pyjj_{self.division}_urls WHERE id={id}")
         self.connection.commit()
         return True, f"Removed successfully! id: {id}"
 
     @handle_exception
     def list_tags(self) -> Tuple[bool, list]:
+        """Returns a list of tags
+
+        :return: a tuple with a status of select query and a list of tags
+        """
         self.cursor.execute(f"SELECT tag, created_at FROM pyjj_{self.division}_tags")
         tags = self.cursor.fetchall()
         return bool(tags), list(zip(range(1, len(tags) + 1), tags))
 
     @handle_exception
-    def add_tags(self, url_id, tags: list) -> Tuple[bool, str]:
+    def add_tags(self, url_id: int, tags: list) -> Tuple[bool, str]:
+        """Attach tags to a url
+
+        :param int url_id: an id of the url
+        :param list tags: a list of tags(tag name)
+        :return: a tuple with a status of insert query and a message
+        """
         for tag in tags:
             is_exists, tag_id = self.check_tag(tag)
 
@@ -144,6 +184,11 @@ class Database:
 
     @handle_exception
     def check_tag(self, tag: str) -> Tuple[bool, int]:
+        """Returns a tag id if the given tag exists, if not returns -1
+
+        :param str tag: a tag name
+        :return: a tuple with a status of select query and a tag id
+        """
         self.cursor.execute(
             f"SELECT id FROM pyjj_{self.division}_tags WHERE tag='{tag}'"
         )
@@ -155,6 +200,12 @@ class Database:
 
     @handle_exception
     def remove_url_tag(self, url_id: int, tag: str) -> Tuple[bool, str]:
+        """Remove a url and tag relationship
+
+        :param int url_id: an id of the url
+        :param str tag: a tag name
+        :return: a tuple with a status of delete query and a message
+        """
         is_exist, tag_id = self.check_tag(tag)
         if is_exist:
             self.cursor.execute(
@@ -168,6 +219,11 @@ class Database:
 
     @handle_exception
     def get_random_url(self, tag: str = None) -> Tuple[bool, tuple]:
+        """Returns a randomly selected url from urls filtered by a tag if it is given
+
+        :param str tag: a tag name
+        :return: a tuple with a status of select query and the url
+        """
         is_urls_exist, urls = self.list_urls(tag)
         url = choice(urls) if urls else ()
         return is_urls_exist, url
