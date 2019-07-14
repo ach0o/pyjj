@@ -25,6 +25,9 @@ def generate_create_sqls(tbl_name: str, columns: List[tuple], keys: Dict) -> str
 
 
 def handle_exception(func):
+    """Handles exceptions raise from query executions
+    """
+
     def wrapper(*args, **kwargs) -> Tuple[bool, str]:
         try:
             return func(*args, **kwargs)
