@@ -3,6 +3,7 @@ import click
 from .config import PyjjConfig
 from .database import Database as Db
 from .messages import msg, header, content, division
+from .utils import validate_url
 
 
 pass_config = click.make_pass_decorator(PyjjConfig, ensure=True)
@@ -64,11 +65,15 @@ def add(config, tags: str, url: str):
     :param object config: an object with the current context
     :param str url: an url to add to the database
     """
-    if tags:
-        result = config.db.add_url(url, tags=tags.split(","))
-    else:
-        result = config.db.add_url(url)
-    click.echo(msg(*result))
+    try:
+        _url = validate_url(url)
+        if tags:
+            result = config.db.add_url(_url, tags=tags.split(","))
+        else:
+            result = config.db.add_url(_url)
+        click.echo(msg(*result))
+    except Exception as e:
+        click.echo(msg(False, str(e)))
 
 
 @pyjj.command(help="Edit a bookmark")
@@ -82,10 +87,14 @@ def edit(config, id: int, url: str):
     :param int id: an id of url to edit
     :param str url: an url to add to the database
     """
-    result = config.db.get_url(id)
-    if result[0]:  # Edit url as id exists
-        result = config.db.edit_url(id, url)
-    click.echo(msg(*result))
+    try:
+        _url = validate_url(url)
+        result = config.db.get_url(id)
+        if result[0]:  # Edit url as id exists
+            result = config.db.edit_url(id, _url)
+        click.echo(msg(*result))
+    except Exception as e:
+        click.echo(msg(False, str(e)))
 
 
 @pyjj.command(help="Remove a bookmark")
