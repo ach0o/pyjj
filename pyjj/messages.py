@@ -44,5 +44,5 @@ def division(division: str) -> str:
     :param str division: a division name to display on the console
     :return: string
     """
-    _dec = "=" * 6
-    return f"\n{_dec} Division: {division} {_dec}\n"
+    div = f" Division: {division} ".center(40, "=")
+    return f"\n{div}\n"
