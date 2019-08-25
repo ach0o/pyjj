@@ -15,11 +15,8 @@ def reformat_url(url: str) -> str:
 
     http, www, loc = um.groups()
 
-    if not http and www:  # www.example.com
+    if not http:
         return f"http://{url}"
-    else:  # http://example.com & example.com
-        return f"http://www.{loc}"
-
     return url
 
 
